@@ -1,0 +1,250 @@
+#: import WipeTransition kivy.uix.screenmanager.WipeTransition
+#: import Clock kivy.clock.Clock
+
+
+
+<Manager>:
+    transition:WipeTransition()
+    #the screens on the screen manager
+    Splash:
+    PlayerDetail:
+    PlayerNumber:
+    GameScreen:
+    
+    
+<FloatLayout>:
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source:"images/back.jpg"
+<MyLabel>:
+    canvas.before:
+        Color:
+            rgba:[1,1,1,1]
+        Rectangle:
+            pos:self.pos
+            size:self.size
+            source:self.image
+    size_hint_y:None
+    height:self.width
+<Cell>:
+    font_size:self.height
+<Splash>:
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source:"images/splash.jpg"
+
+<ContinuePopUp>:
+    title:"State of the Game:"
+    size_hint:0.6,0.4
+    pos_hint:{"center_y":0.5,"center_x":0.5}
+    auto_dismiss:False
+    
+    BoxLayout:
+        orientation:"vertical"
+        Label:
+            text:"Do you wish to continue?"
+            bold:True
+            size_hint:(1,0.6)
+        BoxLayout:
+            orientation:"horizontal"
+            spacing:self.width/3
+            size_hint:(1,0.4)
+            Button:
+                text:"No"
+                bold:True
+                background_color:[1,0,0,1]
+                on_press:
+                    root.parent.remove_widget(root)
+                    app.root.current="player_number"
+                    app.root.get_screen("game").reset()
+                    
+            Button:
+                text:"Yes"
+                bold:True
+                background_color:[0,1,0,1]
+                on_press:
+                    root.parent.remove_widget(root)
+                    app.root.get_screen("game").reset()
+                    Clock.schedule_interval(app.root.get_screen("game").checkgame,0.1)
+                    
+                    
+            
+        
+
+            
+
+<PlayerDetail>:
+    name:"detail"
+    entry_layout:entry_layout
+    sec:sec_player
+    label:label
+    player1_name:inputs
+    
+    Label:
+        markup:True
+        bold:True
+        font_size:self.height/1.2
+        text:"[color=ff0000]Enter the[/color][color=0000ff] player Names[/color]"
+        pos_hint:{"top":1,"center_x":0.5}
+        size_hint:(1,0.1)
+    BoxLayout:
+        orientation:"vertical"
+        spacing:10
+        pos_hint:{"center_y":0.7,"center_x":0.5}
+        size_hint:(0.7,0.3)
+        BoxLayout:
+            orientation:"horizontal"
+            spacing:"10dp"
+            size_hint:(0.8,None)
+            height:inputs.height
+            Label:
+                text:"Player 1"
+                size_hint:(0.2,1)
+                color:[1,0,0,1]
+                font_size:self.height/2
+            TextInput:
+                id:inputs
+                bold:True
+                size_hint:(0.6,None)
+                height:self.minimum_height
+                hint_text:"Player 1"
+                multiline:False
+            MyLabel:
+                size_hint_x:None
+                width:"32dp"
+                image: "images/x.jpg"
+        BoxLayout:
+            id:entry_layout
+            orientation:"horizontal"
+            spacing:10
+            size_hint:(0.8,None)
+            height:inputs.height
+            Label:
+                id:sec_player
+                text:"Cpu"
+                size_hint:(0.2,1)
+                color:[1,0,0,1]
+                font_size:self.height/2
+            Label: 
+                id:label
+                size_hint:(0.6,1)
+                canvas.before:  
+                    Color:
+                        rgba:[0,146/255,63/255,1]
+                    Rectangle:
+                        pos:self.pos
+                        size:self.size                            
+            MyLabel:
+                size_hint_x:None
+                image:"images/o.jpg"
+                width:"32dp"
+    BoxLayout:
+        orientation:"horizontal"
+        pos_hint:{"center_x":0.5,"center_y":0.3}
+        spacing:self.width/4
+        padding:[10,10]
+        size_hint:(0.5,0.1)
+        Button:
+            text:"BACK"
+            size_hint:(0.3,1)
+            font_size:self.height/2
+            on_press:
+                app.root.current="player_number"
+        Button:
+            text:"PLAY"
+            size_hint:(0.3,1)
+            font_size:self.height/2
+            on_press:
+                app.root.current="game"
+                root.set_name()
+                
+    
+<PlayerNumber>:
+    name:"player_number"
+    BoxLayout:
+        pos_hint:{"center_x":0.5,"top":1}
+        orientation:"vertical"
+        size_hint:(1,0.2)
+        
+        Label:
+            
+            markup:True
+            bold:True
+            font_size:self.height/1.3
+            text: "[color=ff0000]Number of[/color][color=0000ff] players[/color]"
+            size_hint:(1,0.5)
+        Label:
+            text:"Select the number of players you want"
+            size_hint:(1,0.5)
+            font_size:self.height/3
+            bold:True
+            color:[1,0,0,1]
+    BoxLayout:
+        orientation: "vertical"
+        spacing: 10
+        pos_hint:{"center_y":0.5,"center_x":0.5}
+        size_hint:(0.3,0.2)
+        #buttons to select the number of players
+        MyButton:
+            background_normal:"images/p2c.jpg"
+            background_down:"images/p2c_down.jpg"
+            size_hint:(1,0.5)
+            bold:True
+            value:"1"
+            on_press:
+                root.choose_player_number(*args)
+                app.root.current="detail"
+        MyButton:
+            background_normal:"images/p2p.jpg"
+            background_down:"images/p2p_down.jpg"
+            size_hint:(1,0.5)
+            bold:True
+            value:"2"
+            on_press:
+                root.choose_player_number(*args)
+                app.root.current="detail"
+                
+                
+                
+                
+<GameScreen>:
+    id:game
+    layout:game_layout
+    board:board_layout
+    player1:player1_label
+    player2:player2_label
+    draw:draw_label
+    name:"game"
+    
+    BoxLayout:
+        id:game_layout
+        orientation:"vertical"
+        size_hint:(1,1)
+        padding:(10,10)
+        BoxLayout:
+            orientation:"horizontal"
+            spacing:10
+            size_hint:(1,0.1)
+            Button:
+                text:"Home"
+                on_press:
+                    app.root.current="player_number"
+            Label:
+                id:player1_label
+            Label:
+                id:draw_label
+                
+            Label:
+                id:player2_label
+        GridLayout:
+            id:board_layout
+            spacing:"10dp"
+            size_hint:(1,0.8)
+            rows:3
+            cols:3
+            
+        
